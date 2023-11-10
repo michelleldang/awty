@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.SystemClock
 import android.text.Editable
 import android.util.Log
 import android.widget.Button
@@ -31,24 +32,19 @@ class MainActivity : AppCompatActivity() {
         phoneInput = findViewById(R.id.phone_input)
         minutesInput = findViewById(R.id.minutes_input)
         button.setOnClickListener {
-            if (messageInput.text.toString() != "" || phoneInput.text.toString()!= "" || minutesInput.text.toString()!= "") {
+            if (messageInput.text.toString() != "" && phoneInput.text.toString()!= "" && minutesInput.text.toString()!= "") {
                 validate(
                     messageInput.text.toString(),
                     phoneInput.text.toString(),
                     minutesInput.text.toString()
                 )
+            } else {
+                Toast.makeText(this, "Field is empty", Toast.LENGTH_SHORT).show()
             }
         }
 
 
     }
-
-//    override fun onPause() {
-//        super.onPause()
-//
-//        unregisterReceiver(receiver)
-//        receiver = null
-//    }
 
     private fun validate (message: String, phone: String, minutes: String) {
         val  button: Button = findViewById(R.id.start_button)
@@ -84,6 +80,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun startMessages (message: String, phone: String, minutes: Int) {
+        messageInput.isEnabled = false
+        phoneInput.isEnabled = false
+        minutesInput.isEnabled = false
+
         val activityThis = this
         if (receiver == null) {
             receiver = object : BroadcastReceiver() {
@@ -102,11 +102,15 @@ class MainActivity : AppCompatActivity() {
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             System.currentTimeMillis(),
-            minutes.toLong(), //  1000 * 60 * minutes
+            (1000*60*minutes).toLong(), //  1000 * 60 * minutes
             pendingIntent)
     }
     private fun stopMessages () {
-
+        messageInput.isEnabled = true
+        phoneInput.isEnabled = true
+        minutesInput.isEnabled = true
+        unregisterReceiver(receiver)
+        receiver = null
     }
 }
 
