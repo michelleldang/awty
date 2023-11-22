@@ -6,9 +6,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
+import android.telephony.SmsManager
 import android.text.Editable
 import android.util.Log
 import android.widget.Button
@@ -89,7 +91,7 @@ class MainActivity : AppCompatActivity() {
             receiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context?, intent: Intent?) {
                     Log.d("MainActivity", "toast activity ")
-                    Toast.makeText(activityThis, "${phone}:${message}", Toast.LENGTH_SHORT).show()
+                    sendMessages(message, phone)
                 }
             }
             val filter = IntentFilter(ALARM_ACTION)
@@ -112,6 +114,22 @@ class MainActivity : AppCompatActivity() {
         unregisterReceiver(receiver)
         receiver = null
     }
+
+    private fun sendMessages (message: String, phone: String) {
+            try {
+                val smsManager:SmsManager = if (Build.VERSION.SDK_INT>=23) {
+                    this.getSystemService(SmsManager::class.java)
+                } else{
+                    SmsManager.getDefault()
+                }
+                val phoneNumber = phone.replace(Regex("[^\\d]"), "")
+                smsManager.sendTextMessage(phoneNumber, null, message, null, null)
+
+        } catch (e: Exception) {
+                Log.e("sendMessages", "$e")
+        }
+    }
+
 }
 
 
