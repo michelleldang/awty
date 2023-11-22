@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 val phoneNumber = phone.replace(Regex("[^\\d]"), "")
                 smsManager.sendTextMessage(phoneNumber, null, message, null, null)
-
+                Log.d("MainActivity", "message sent")
         } catch (e: Exception) {
                 Log.e("sendMessages", "$e")
         }
